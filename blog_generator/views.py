@@ -1,14 +1,16 @@
-from django.shortcuts import render, redirect
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-from django.conf import settings
 import json
-from pytube import YouTube
 import os
+
 import assemblyai as aai
 import openai
-from .models import BlogPost
+from django.conf import settings
+from django.http import JsonResponse
+from django.shortcuts import redirect
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+from pytube import YouTube
 
+from .models import BlogPost
 
 # Create your views here.
 
@@ -35,7 +37,8 @@ def generate_blog(request):
         blog_content = generate_blog_from_transcription(transcription)
         if not blog_content:
             return JsonResponse(
-                {"error": "Failed to generate blog article"}, status=500
+                {"error": "Failed to generate blog article"},
+                status=500,
             )
 
         new_blog_article = BlogPost.objects.create(
@@ -84,7 +87,9 @@ def generate_blog_from_transcription(transcription):
     like a proper blog article :\n\n {transcription}\n\nArticle:"
 
     response = openai.completions.create(
-        model="gpt-3.5-turbo-instruct", prompt=prompt, max_tokens=100
+        model="gpt-3.5-turbo-instruct",
+        prompt=prompt,
+        max_tokens=100,
     )
 
     generated_content = response.choices[0].text.strip()
@@ -95,7 +100,9 @@ def generate_blog_from_transcription(transcription):
 def blog_list(request):
     blog_articles = BlogPost.objects.filter(user=request.user)
     return render(
-        request, "blog_generator/all-blogs.html", {"blog_articles": blog_articles}
+        request,
+        "blog_generator/all-blogs.html",
+        {"blog_articles": blog_articles},
     )
 
 
